@@ -1,0 +1,43 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/analysis"
+  to = "/.netlify/functions/analysis"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/bcb"
+  to = "/.netlify/functions/bcb"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/sidra"
+  to = "/.netlify/functions/sidra"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/ibovespa"
+  to = "/.netlify/functions/ibovespa"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/ptax"
+  to = "/.netlify/functions/ptax"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/brapi"
+  to = "/.netlify/functions/brapi"
+  status = 200
+  force = true

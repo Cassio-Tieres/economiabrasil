@@ -163,6 +163,16 @@ function handlePublicData(request, response, url) {
   if (url.pathname === "/api/ibovespa") {
     return proxyPublicJson(response, "https://query1.finance.yahoo.com/v8/finance/chart/%5EBVSP?range=1d&interval=5m", { "User-Agent": "Mozilla/5.0 EconoBr/1.0" });
   }
+  if (url.pathname === "/api/ptax") {
+    const start = url.searchParams.get("start") || ""; const end = url.searchParams.get("end") || "";
+    if (!/^\d{2}-\d{2}-\d{4}$/.test(start) || !/^\d{2}-\d{2}-\d{4}$/.test(end)) return sendJson(response, 400, { error: "Período PTAX inválido." });
+    return proxyPublicJson(response, `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@moeda,dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@moeda=%27USD%27&@dataInicial=%27${start}%27&@dataFinalCotacao=%27${end}%27&$top=100&$format=json`);
+  }
+  if (url.pathname === "/api/brapi") {
+    const symbols = url.searchParams.get("symbols") || "";
+    if (!/^[A-Z0-9,]{1,100}$/.test(symbols)) return sendJson(response, 400, { error: "Lista de ativos inválida." });
+    return proxyPublicJson(response, `https://brapi.dev/api/v2/stocks/quote?symbols=${encodeURIComponent(symbols)}`, { "User-Agent": "EconoBr/1.0" });
+  }
   if (url.pathname === "/api/bcb") {
     const series = url.searchParams.get("series") || ""; const limit = Number(url.searchParams.get("limit"));
     if (!/^\d{1,6}$/.test(series) || !Number.isInteger(limit) || limit < 1 || limit > 20) return sendJson(response, 400, { error: "Série ou quantidade inválida. O SGS permite até 20 observações por consulta." });
@@ -181,7 +191,7 @@ async function handleRequest(request, response) {
   const url = new URL(request.url, "http://localhost");
   if (url.pathname === "/favicon.ico") { response.writeHead(204, { "Cache-Control": "public, max-age=86400" }); return response.end(); }
   if (url.pathname === "/api/analysis") return handleAnalysis(request, response);
-  if (url.pathname === "/api/bcb" || url.pathname === "/api/sidra" || url.pathname === "/api/ibovespa") return handlePublicData(request, response, url);
+  if (["/api/bcb", "/api/sidra", "/api/ibovespa", "/api/ptax", "/api/brapi"].includes(url.pathname)) return handlePublicData(request, response, url);
   if (request.method !== "GET" && request.method !== "HEAD") return sendJson(response, 405, { error: "Método não permitido." });
   const route = url.pathname === "/" ? "/index.html" : decodeURIComponent(url.pathname);
   const filename = normalize(route).replace(/^([.][.][/\\])+/, "").replace(/^[/\\]+/, "");

@@ -1,6 +1,6 @@
 # Economia Brasil
 
-Painel web estático para acompanhar indicadores econômicos brasileiros e cotações de mercado. A interface é feita em HTML, CSS e JavaScript, sem dependências ou etapa de compilação.
+Painel web para acompanhar indicadores econômicos brasileiros e cotações de mercado. A interface é feita em HTML, CSS e JavaScript; o build de publicação apenas copia os arquivos públicos para `dist/`.
 
 A navegação tem duas áreas separadas: **Visão geral** para a macroeconomia e **Mercado imobiliário** para indicadores nacionais de imóveis, crédito habitacional, juros e construção.
 
@@ -15,6 +15,16 @@ npm start
 Depois, abra `http://localhost:8000` no navegador. O `.env` pode usar `GROQ` (já reconhecido) ou `GROQ_API_KEY`; `GROQ_MODEL` é opcional e, por padrão, usa `openai/gpt-oss-20b`. Não publique nem compartilhe o `.env`.
 
 Para gerar as análises e consultar os dados oficiais, abra o endereço `http://localhost:8000` servido pelo `npm start`. O servidor local encaminha consultas ao Banco Central e ao IBGE, evitando depender do acesso direto do navegador a essas APIs. Não abra o `index.html` diretamente nem use um servidor apenas estático (como Live Server): eles não têm os endpoints locais necessários.
+
+## Publicar no Netlify
+
+O projeto está configurado para publicar somente os arquivos de `dist/`. As rotas `/api/*` são encaminhadas para Netlify Functions, então as chaves e chamadas de servidor não ficam no JavaScript do navegador.
+
+1. Envie o projeto para um repositório Git e crie um site no Netlify conectado a esse repositório. O `netlify.toml` já define o comando `npm run build`, a pasta `dist` e as Functions.
+2. Nas variáveis de ambiente do site no Netlify, cadastre `GROQ_API_KEY` com sua chave Groq. Defina o escopo para incluir **Functions**. `GROQ_MODEL` é opcional; o padrão é `openai/gpt-oss-20b`. Cadastre o segredo no painel do Netlify, nunca no `netlify.toml` nem em arquivos publicados.
+3. Dispare o deploy. Para gerar a pasta localmente, execute `npm run build`; ela contém apenas `index.html`, `app.js` e `styles.css`.
+
+O `.env` serve apenas para executar o servidor local. O build de publicação copia uma lista explícita de arquivos para `dist/`, sem incluir `.env`, o servidor de desenvolvimento ou as fontes das Functions.
 
 ## Dados consultados
 

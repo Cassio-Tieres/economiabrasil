@@ -6,8 +6,8 @@ const API = {
     if (filters) params.set("filters", filters);
     return `/api/sidra?${params}`;
   },
-  brapi: (symbols) => `https://brapi.dev/api/v2/stocks/quote?symbols=${encodeURIComponent(symbols)}`,
-  ptax: (start, end) => `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@moeda,dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@moeda=%27USD%27&@dataInicial=%27${start}%27&@dataFinalCotacao=%27${end}%27&$top=100&$format=json`
+  brapi: (symbols) => `/api/brapi?symbols=${encodeURIComponent(symbols)}`,
+  ptax: (start, end) => `/api/ptax?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`
 };
 const $ = (id) => document.getElementById(id);
 const analysisSnapshots = { macro: {}, realestate: {} };
